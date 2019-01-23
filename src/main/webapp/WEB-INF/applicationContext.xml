@@ -41,7 +41,7 @@
   <bean id="historyService"    factory-bean="processEngine" factory-method="getHistoryService" />
   <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
 
-  <context:component-scan base-package="org.camunda.bpm.getstarted"/>
+  <context:component-scan base-package="org.camunda.bpm.getstarted.process"/>
   <!--<bean class="org.camunda.bpm.getstarted.process.bean.CamundaLoanApproval" />-->
   <!--<bean class="org.camunda.bpm.getstarted.process.bean.CamundaTripBookingSagaSimple" />-->
   <!--<bean class="org.camunda.bpm.getstarted.process.adapter.CalculateInterestAdapter" id="calculateInterestService"  />-->
