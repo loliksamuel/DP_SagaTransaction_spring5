@@ -16,4 +16,5 @@ If you want to follow the tutorial along please clone this repository and checko
 ```
 git clone https://github.com/camunda/camunda-get-started-spring.git
 git checkout -f Start
+mvn jetty:run -Djetty.http.port=9999
 ```
