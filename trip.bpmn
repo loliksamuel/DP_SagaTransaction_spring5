@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="definitions_fd4c9926-b071-4e39-b093-91c586167f2a" targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+  <process id="trip" isExecutable="true">
+    <startEvent id="Start-trip" name="Start-trip">
+      <outgoing>sequenceFlow_3cb59e4a-bfb4-458d-b560-6f6ec99ed591</outgoing>
+    </startEvent>
+    <serviceTask camunda:class="org.camunda.bpm.getstarted.process.adapter.BookCarAdapter" id="Activity-Book----car" name="Book    car">
+      <incoming>sequenceFlow_3cb59e4a-bfb4-458d-b560-6f6ec99ed591</incoming>
+      <outgoing>sequenceFlow_501d452f-2d21-4257-b97e-ad4178effa62</outgoing>
+    </serviceTask>
+    <sequenceFlow id="sequenceFlow_3cb59e4a-bfb4-458d-b560-6f6ec99ed591" sourceRef="Start-trip" targetRef="Activity-Book----car"/>
+    <boundaryEvent attachedToRef="Activity-Book----car" id="boundaryEvent_ea1db4fb-3cc2-4dc9-86dc-7bec788a0ddf">
+      <compensateEventDefinition id="compensateEventDefinition_53bdc6e1-6989-4db7-b48b-2fbc94aa4585"/>
+    </boundaryEvent>
+    <serviceTask camunda:class="org.camunda.bpm.getstarted.process.adapter.CancelCarAdapter" id="Activity-Cancel--car-compensation" isForCompensation="true" name="Cancel  car"/>
+    <serviceTask camunda:class="org.camunda.bpm.getstarted.process.adapter.BookHotelAdapter" id="Activity-Book---hotel" name="Book   hotel">
+      <incoming>sequenceFlow_501d452f-2d21-4257-b97e-ad4178effa62</incoming>
+      <outgoing>sequenceFlow_860f7a1c-2079-4ac1-a040-ff78116ce396</outgoing>
+    </serviceTask>
+    <sequenceFlow id="sequenceFlow_501d452f-2d21-4257-b97e-ad4178effa62" sourceRef="Activity-Book----car" targetRef="Activity-Book---hotel"/>
+    <boundaryEvent attachedToRef="Activity-Book---hotel" id="boundaryEvent_a8b4709a-1b54-44a8-968b-5ca0c44f9908">
+      <compensateEventDefinition id="compensateEventDefinition_cbaf2595-b268-45cf-a693-1eaad2da043b"/>
+    </boundaryEvent>
+    <serviceTask camunda:class="org.camunda.bpm.getstarted.process.adapter.CancelHotelAdapter" id="Activity-Cancel-hotel-compensation" isForCompensation="true" name="Cancel hotel"/>
+    <serviceTask camunda:class="org.camunda.bpm.getstarted.process.adapter.BookFlightAdapter" id="Activity-Book---flight" name="Book   flight">
+      <incoming>sequenceFlow_860f7a1c-2079-4ac1-a040-ff78116ce396</incoming>
+      <outgoing>sequenceFlow_2eff8231-13bf-406b-a16b-f2332ea9469e</outgoing>
+    </serviceTask>
+    <sequenceFlow id="sequenceFlow_860f7a1c-2079-4ac1-a040-ff78116ce396" sourceRef="Activity-Book---hotel" targetRef="Activity-Book---flight"/>
+    <boundaryEvent attachedToRef="Activity-Book---flight" id="boundaryEvent_f05615e3-763b-429d-8797-776c385386ec">
+      <compensateEventDefinition id="compensateEventDefinition_208dd3d7-b94a-4b53-84c9-a83e60c5a688"/>
+    </boundaryEvent>
+    <serviceTask camunda:class="org.camunda.bpm.getstarted.process.adapter.CancelFlightAdapter" id="Activity-Cancel-flight-compensation" isForCompensation="true" name="Cancel flight"/>
+    <endEvent id="End-trip" name="End-trip">
+      <incoming>sequenceFlow_2eff8231-13bf-406b-a16b-f2332ea9469e</incoming>
+    </endEvent>
+    <sequenceFlow id="sequenceFlow_2eff8231-13bf-406b-a16b-f2332ea9469e" sourceRef="Activity-Book---flight" targetRef="End-trip"/>
+    <subProcess id="subProcess_781566f4-0a3d-4051-a402-d3df0f3c8865" triggeredByEvent="true">
+      <startEvent id="ErrorCatched" name="ErrorCatched">
+        <outgoing>sequenceFlow_ca98a564-4d2d-4063-a47d-1471fc66664b</outgoing>
+        <errorEventDefinition errorRef="error_2230071b-ab31-41ec-a370-c4fe7fc8f7d5" id="errorEventDefinition_b9b6645d-a9d5-4acc-8e27-9c2a2f7417c2"/>
+      </startEvent>
+      <intermediateThrowEvent id="ToBeCompensated" name="ToBeCompensated">
+        <incoming>sequenceFlow_ca98a564-4d2d-4063-a47d-1471fc66664b</incoming>
+        <outgoing>sequenceFlow_3c204701-2a0f-41d3-9556-e0c2ccc02f5e</outgoing>
+        <compensateEventDefinition id="compensateEventDefinition_941a9286-b72d-44d7-8285-a9b744fe195f"/>
+      </intermediateThrowEvent>
+      <sequenceFlow id="sequenceFlow_ca98a564-4d2d-4063-a47d-1471fc66664b" sourceRef="ErrorCatched" targetRef="ToBeCompensated"/>
+      <endEvent id="ErrorHandled" name="ErrorHandled">
+        <incoming>sequenceFlow_3c204701-2a0f-41d3-9556-e0c2ccc02f5e</incoming>
+      </endEvent>
+      <sequenceFlow id="sequenceFlow_3c204701-2a0f-41d3-9556-e0c2ccc02f5e" sourceRef="ToBeCompensated" targetRef="ErrorHandled"/>
+    </subProcess>
+    <association associationDirection="One" id="association_87d0bf26-f7ef-426b-aaca-399997139129" sourceRef="boundaryEvent_ea1db4fb-3cc2-4dc9-86dc-7bec788a0ddf" targetRef="Activity-Cancel--car-compensation"/>
+    <association associationDirection="One" id="association_de84bd35-fa6b-46d1-995a-da7301a16a3f" sourceRef="boundaryEvent_a8b4709a-1b54-44a8-968b-5ca0c44f9908" targetRef="Activity-Cancel-hotel-compensation"/>
+    <association associationDirection="One" id="association_0a32a749-c920-4a84-a1da-dbd1452d9b25" sourceRef="boundaryEvent_f05615e3-763b-429d-8797-776c385386ec" targetRef="Activity-Cancel-flight-compensation"/>
+  </process>
+  <error errorCode="java.lang.Throwable" id="error_2230071b-ab31-41ec-a370-c4fe7fc8f7d5"/>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_a7c35a05-ff33-4002-bfe4-17823cfcdfb5">
+    <bpmndi:BPMNPlane bpmnElement="trip" id="BPMNPlane_21678a08-c6e9-4956-9411-e5317bbe43fc">
+      <bpmndi:BPMNShape bpmnElement="Start-trip" id="BPMNShape_65940183-8367-4f7a-a868-4fb8c18f3df2">
+        <dc:Bounds height="36.0" width="36.0" x="100.0" y="100.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Activity-Book----car" id="BPMNShape_08cfbba9-e10e-4757-a518-467719bedf99">
+        <dc:Bounds height="80.0" width="100.0" x="186.0" y="78.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow_3cb59e4a-bfb4-458d-b560-6f6ec99ed591" id="BPMNEdge_4558f345-916f-4a7e-b580-510b6dde703a">
+        <di:waypoint x="136.0" y="118.0"/>
+        <di:waypoint x="186.0" y="118.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="boundaryEvent_ea1db4fb-3cc2-4dc9-86dc-7bec788a0ddf" id="BPMNShape_b270809e-f7cb-4622-b46e-bcbe114bf578">
+        <dc:Bounds height="36.0" width="36.0" x="218.0" y="140.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Activity-Cancel--car-compensation" id="BPMNShape_79e84e1a-4af3-42bc-bd15-afb697745325">
+        <dc:Bounds height="80.0" width="100.0" x="266.5" y="186.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="association_87d0bf26-f7ef-426b-aaca-399997139129" id="BPMNEdge_c86c9212-16ff-440c-9ab9-5f0b101ed4cc">
+        <di:waypoint x="236.0" y="176.0"/>
+        <di:waypoint x="236.0" y="226.0"/>
+        <di:waypoint x="266.5" y="226.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="Activity-Book---hotel" id="BPMNShape_ff9297dd-f3b2-4b5f-809f-da422911c2a5">
+        <dc:Bounds height="80.0" width="100.0" x="336.0" y="78.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow_501d452f-2d21-4257-b97e-ad4178effa62" id="BPMNEdge_9e03acc0-52fd-4f30-a83e-11066ad721f8">
+        <di:waypoint x="286.0" y="118.0"/>
+        <di:waypoint x="336.0" y="118.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="boundaryEvent_a8b4709a-1b54-44a8-968b-5ca0c44f9908" id="BPMNShape_0fb75aae-1e92-4791-9a91-05c04355fdf6">
+        <dc:Bounds height="36.0" width="36.0" x="368.0" y="140.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Activity-Cancel-hotel-compensation" id="BPMNShape_ac92794d-3eed-41af-9afe-d9299b8908e4">
+        <dc:Bounds height="80.0" width="100.0" x="416.5" y="186.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="association_de84bd35-fa6b-46d1-995a-da7301a16a3f" id="BPMNEdge_506bc673-016b-435c-8925-bb8286245d23">
+        <di:waypoint x="386.0" y="176.0"/>
+        <di:waypoint x="386.0" y="226.0"/>
+        <di:waypoint x="416.5" y="226.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="Activity-Book---flight" id="BPMNShape_5793dd75-e223-4abf-8c2c-d9b68282ac6b">
+        <dc:Bounds height="80.0" width="100.0" x="486.0" y="78.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow_860f7a1c-2079-4ac1-a040-ff78116ce396" id="BPMNEdge_3960ff21-690b-4bcc-b117-5b285bc80577">
+        <di:waypoint x="436.0" y="118.0"/>
+        <di:waypoint x="486.0" y="118.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="boundaryEvent_f05615e3-763b-429d-8797-776c385386ec" id="BPMNShape_cdde620d-ada1-4226-b02f-1010f943f048">
+        <dc:Bounds height="36.0" width="36.0" x="518.0" y="140.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Activity-Cancel-flight-compensation" id="BPMNShape_3e5f71b1-3612-4722-98e1-2b477ce98da5">
+        <dc:Bounds height="80.0" width="100.0" x="566.5" y="186.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="association_0a32a749-c920-4a84-a1da-dbd1452d9b25" id="BPMNEdge_b25376d3-8db6-4caa-a6c1-af9d03891f38">
+        <di:waypoint x="536.0" y="176.0"/>
+        <di:waypoint x="536.0" y="226.0"/>
+        <di:waypoint x="566.5" y="226.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="End-trip" id="BPMNShape_6ff7277b-40e8-4f46-b7f1-853fc7005314">
+        <dc:Bounds height="36.0" width="36.0" x="636.0" y="100.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow_2eff8231-13bf-406b-a16b-f2332ea9469e" id="BPMNEdge_15c9c1ca-0144-41c8-bc33-bb90a80afa29">
+        <di:waypoint x="586.0" y="118.0"/>
+        <di:waypoint x="636.0" y="118.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="subProcess_781566f4-0a3d-4051-a402-d3df0f3c8865" id="BPMNShape_0029293d-fb6a-48b7-abcd-83d7a1bd45c9" isExpanded="true">
+        <dc:Bounds height="200.0" width="350.0" x="100.0" y="316.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ErrorCatched" id="BPMNShape_303e7709-f46b-41ee-a54e-47eff36dd854">
+        <dc:Bounds height="36.0" width="36.0" x="150.0" y="398.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ToBeCompensated" id="BPMNShape_f56d5d84-cc25-473f-8b6a-b46e2313dbc5">
+        <dc:Bounds height="36.0" width="36.0" x="236.0" y="398.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow_ca98a564-4d2d-4063-a47d-1471fc66664b" id="BPMNEdge_217ff967-cf81-4905-b587-b4a006c42e69">
+        <di:waypoint x="186.0" y="416.0"/>
+        <di:waypoint x="236.0" y="416.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="ErrorHandled" id="BPMNShape_10cb7427-552b-417c-baef-17f7215816fb">
+        <dc:Bounds height="36.0" width="36.0" x="322.0" y="398.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow_3c204701-2a0f-41d3-9556-e0c2ccc02f5e" id="BPMNEdge_e7b0cd43-e82e-4899-aef6-36908dd49528">
+        <di:waypoint x="272.0" y="416.0"/>
+        <di:waypoint x="322.0" y="416.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

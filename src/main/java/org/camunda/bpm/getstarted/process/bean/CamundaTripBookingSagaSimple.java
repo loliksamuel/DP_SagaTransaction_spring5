@@ -3,6 +3,7 @@ package org.camunda.bpm.getstarted.process.bean;
 
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.getstarted.process.SagaBuilder;
 import org.camunda.bpm.getstarted.process.adapter.*;
@@ -10,12 +11,14 @@ import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
-//@Component
+@Component
 //@Singleton
-public class CamundaTripBookingSagaSimple  implements InitializingBean {
+public class CamundaTripBookingSagaSimple {//} implements InitializingBean {
   @Autowired
   private RepositoryService repositoryService;
 
@@ -33,6 +36,7 @@ public class CamundaTripBookingSagaSimple  implements InitializingBean {
 //  @Value("${succeed.car:true}")
 //  String shouldSucceedCar;
 
+  @PostConstruct
   public void afterPropertiesSet() throws Exception {
     //runtimeService.startProcessInstanceByKey("loanApproval");
     //runtimeService.startProcessInstanceByKey("trip");
@@ -44,6 +48,8 @@ public class CamundaTripBookingSagaSimple  implements InitializingBean {
   //@PostConstruct
   public void startJavaApi() {
 
+    VariableMap map = Variables.putValue("someVariableToPass", "someValue")
+                               .putValue("name", "mazda");
     // Configure and startup (in memory) engine
     //ProcessEngine camunda = new StandaloneInMemProcessEngineConfiguration().buildProcessEngine();
 
@@ -71,16 +77,7 @@ public class CamundaTripBookingSagaSimple  implements InitializingBean {
 
 
     // run instances of our saga - its state will be persisted
-    runtimeService.startProcessInstanceByKey(
-            "trip",
-            Variables.putValue("someVariableToPass", "someValue")
-                     .putValue("name", "mazda"));
-
-
-
-
-
-
+    runtimeService.startProcessInstanceByKey("trip", map);
 
 
   }
