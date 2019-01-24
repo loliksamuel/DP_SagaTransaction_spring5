@@ -16,12 +16,17 @@ package org.camunda.bpm.getstarted.process.bean;
 import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class CamundaLoanApproval implements InitializingBean {
+import javax.annotation.PostConstruct;
+
+@Component
+public class CamundaLoanApproval{//} implements InitializingBean {
 
   @Autowired
   private RuntimeService runtimeService;
 
+  @PostConstruct
   public void afterPropertiesSet() throws Exception {
     System.out.println("\nstarting camunda process loanApproval");
     System.out.println("--------------------------------");
