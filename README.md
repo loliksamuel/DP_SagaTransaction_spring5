@@ -1,3 +1,8 @@
+# Saga Pattern
+The Saga pattern is the solution to implementing business transactions spanning multiple microservices.
+
+A Saga is basically a sequence of local transactions. For every transaction performed within a Saga, the service performing the transaction publishes an event. The subsequent transaction is triggered based on the output of the previous transaction. And if one of the transactions in this chain fails, the Saga executes a series of compensating transactions to undo the impact of all the previous transactions.
+
 # camunda BPM - Getting Started with camunda BPM and the Spring Framework
 
 This Repository contains the 2 examples process application for the guide at [camunda.org](http://camunda.org/get-started/spring-framework.html).
